@@ -3,15 +3,15 @@ import {
   StyleSheet,
   Text,
   View,
-  Touchable,
   TouchableWithoutFeedback,
   Keyboard,
   Alert,
   AsyncStorage,
-  ScrollView,
-  KeyboardAvoidingView
+  ScrollView
 } from "react-native";
 import { Form, Item, Input, Label, Button } from "native-base";
+
+const test = "5";
 
 export default class AddContactScreen extends Component {
   constructor() {
@@ -26,9 +26,9 @@ export default class AddContactScreen extends Component {
   }
   static navigationOptions = {
     title: "Add Contact"
-    /* No more header config here! */
   };
   saveContact = async () => {
+    Alert.alert("Saving Contact ...", this.state.fname);
     if (
       this.state.fname !== "" &&
       this.state.lname !== "" &&
@@ -36,6 +36,7 @@ export default class AddContactScreen extends Component {
       this.state.email !== "" &&
       this.state.address !== ""
     ) {
+      Alert.alert("if");
       let contact = {
         fname: this.state.fname,
         lname: this.state.lname,
@@ -44,15 +45,19 @@ export default class AddContactScreen extends Component {
         address: this.state.address
       };
       try {
+        Alert.alert("Try caught ...");
         await AsyncStorage.setItem(
           Date.now().toString(),
           JSON.stringify(contact)
-        ).then(() => this.props.navigation.goBack());
+        ).then(() => {
+          Alert.alert("Done, You're being redirected to Home !");
+          this.props.navigation.navigate("Home");
+        });
       } catch (error) {
         console.log("AsyncStorage: ", error);
       }
     } else {
-      Alert.alert("All fields are required !");
+      // Alert.alert("All fields are required !");
     }
   };
   state = {};
@@ -67,7 +72,7 @@ export default class AddContactScreen extends Component {
                 autoCorrect={false}
                 autoCapitalize="none"
                 keyboardType="default"
-                onchangeText={fname => this.setSate({ fname })}
+                onChangeText={fname => this.setState({ fname })}
               ></Input>
             </Item>
             <Item style={styles.inputItem}>
@@ -76,7 +81,7 @@ export default class AddContactScreen extends Component {
                 autoCorrect={false}
                 autoCapitalize="none"
                 keyboardType="default"
-                onchangeText={lname => this.setSate({ lname })}
+                onChangeText={lname => this.setState({ lname })}
               ></Input>
             </Item>
             <Item style={styles.inputItem}>
@@ -85,7 +90,7 @@ export default class AddContactScreen extends Component {
                 autoCorrect={false}
                 autoCapitalize="none"
                 keyboardType="numeric"
-                onchangeText={phone => this.setSate({ phone })}
+                onChangeText={phone => this.setState({ phone })}
               ></Input>
             </Item>
             <Item style={styles.inputItem}>
@@ -94,16 +99,16 @@ export default class AddContactScreen extends Component {
                 autoCorrect={false}
                 autoCapitalize="none"
                 keyboardType="email-address"
-                onchangeText={email => this.setSate({ email })}
+                onChangeText={email => this.setState({ email })}
               ></Input>
             </Item>
             <Item style={styles.inputItem}>
-              <Label>address</Label>
+              <Label>Address</Label>
               <Input
                 autoCorrect={false}
                 autoCapitalize="none"
                 keyboardType="default"
-                onchangeText={address => this.setSate({ address })}
+                onChangeText={address => this.setState({ address })}
               ></Input>
             </Item>
           </Form>
@@ -129,8 +134,9 @@ const styles = StyleSheet.create({
     margin: 10
   },
   button: {
-    backgroundColor: "#B83227",
-    marginTop: 40
+    backgroundColor: "#1BCA9B",
+    marginTop: 40,
+    borderRadius: 5
   },
   buttonText: {
     color: "#fff",
