@@ -8,11 +8,18 @@ import {
   FlatList
 } from "react-native";
 import { Card } from "native-base";
+import { sorting } from "./functions/sortThem";
 import { Entypo } from "@expo/vector-icons";
 
-function Item({ contact }) {
+function Item({ contact, Key, classProps }) {
   return (
-    <TouchableOpacity>
+    <TouchableOpacity
+      onPress={() =>
+        classProps.navigation.navigate("View", {
+          Key
+        })
+      }
+    >
       <Card style={styles.listItem}>
         <View style={styles.iconContainer}>
           <Text style={styles.contactIcon}>
@@ -34,7 +41,8 @@ export default class HomeScreen extends Component {
   constructor() {
     super();
     this.state = {
-      Data: []
+      Data: [],
+      result: []
     };
   }
   static navigationOptions = {
@@ -53,21 +61,17 @@ export default class HomeScreen extends Component {
     try {
       await AsyncStorage.getAllKeys().then(keys => {
         return AsyncStorage.multiGet(keys).then(result => {
-          // let Array1 = new Array(result.length);
-          // let Array2 = Array1;
-          // Get All The Result[i][1] in Array1
-          // map Array1 and fill Array2 (by a map too)
-          // Array1.map(array1=>{
-          //  if(Array2.length === 0) Array2.push(array1)
-          //  Array2.map(array2=>{
-          //    array1.fname[0] > array2.fname[0] ? Array2.push(array1): Array2.unshift(array1)
-          // })
-          // })
-          // Data: Array2
-
-          this.setState({ Data: result }, () =>
-            console.log("res", JSON.parse(result[0][1]), result.length)
-          );
+          let Array1 = new Array(result.length).fill(0);
+          // Get All The result[i][1] in Array1
+          // console.log("result: ", result);
+          let i = 0,
+            array1Index = 0;
+          for (let item of result) {
+            Array1[i] = JSON.parse(item[1]);
+            i++;
+          }
+          // sorting(Array1);
+          this.setState({ Data: result });
         });
       });
     } catch (error) {
@@ -80,11 +84,13 @@ export default class HomeScreen extends Component {
       <View style={styles.container}>
         <FlatList
           data={this.state.Data}
-          renderItem={({ item }) => {
+          renderItem={({ item, index }) => {
             let toSend = item;
             toSend = JSON.parse(toSend[1]);
-            // console.log("Mad Obj", toSend);
-            return <Item contact={toSend} />;
+            console.log("key", item[0]);
+            return (
+              <Item contact={toSend} Key={item[0]} classProps={this.props} />
+            );
           }}
           keyExtractor={(item, index) => index.toString()}
         ></FlatList>
