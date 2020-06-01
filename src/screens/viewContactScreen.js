@@ -8,10 +8,11 @@ import {
   TouchableOpacity,
   Linking,
   Platform,
-  AsyncStorage
+  AsyncStorage,
 } from "react-native";
 import { Card, CardItem } from "native-base";
-import { Entypo } from "@expo/vector-icons";
+import { FontAwesome } from "@expo/vector-icons";
+import { Image } from "react-native-elements";
 
 export default class ViewContactScreen extends Component {
   constructor(props) {
@@ -22,12 +23,12 @@ export default class ViewContactScreen extends Component {
       phone: "DummyText",
       email: "DummyText",
       address: "DummyText",
-      key: "DummyText"
+      key: "DummyText",
     };
   }
 
   static navigationOptions = {
-    title: "View Contact"
+    title: "View Contact",
     /* No more header config here! */
   };
   componentDidMount() {
@@ -38,21 +39,21 @@ export default class ViewContactScreen extends Component {
       this.getContact(Key);
     });
   }
-  getContact = async Key => {
+  getContact = async (Key) => {
     try {
       await AsyncStorage.getItem(Key)
-        .then(contactJsonString => {
+        .then((contactJsonString) => {
           let contact = JSON.parse(contactJsonString);
           contact["Key"] = Key;
           this.setState(contact);
         })
-        .catch(error => {
+        .catch((error) => {
           console.log(error);
         });
     } catch (error) {}
   };
 
-  callAction = phone => {
+  callAction = (phone) => {
     let phoneNumber = phone;
     if (Platform.OS !== "android") {
       phoneNumber = "telpromt:" + phone;
@@ -60,38 +61,38 @@ export default class ViewContactScreen extends Component {
       phoneNumber = "tel:" + phone;
     }
     Linking.canOpenURL(phoneNumber)
-      .then(supported => {
+      .then((supported) => {
         if (!supported) {
           Alert.alert("Phone number not availlable !");
         } else {
           return Linking.openURL(phoneNumber);
         }
       })
-      .catch(error => {
+      .catch((error) => {
         console.log(error);
       });
   };
-  smsAction = phone => {
+  smsAction = (phone) => {
     let phoneNumber = "sms:" + phone;
 
     Linking.canOpenURL(phoneNumber)
-      .then(supported => {
+      .then((supported) => {
         if (!supported) {
           Alert.alert("Phone number not availlable !");
         } else {
           return Linking.openURL(phoneNumber);
         }
       })
-      .catch(error => {
+      .catch((error) => {
         console.log(error);
       });
   };
 
-  editContact = Key => {
+  editContact = (Key) => {
     this.props.navigation.navigate("Edit", { Key });
   };
 
-  deleteContact = key => {
+  deleteContact = (key) => {
     // const user = this.state.fname;
     Alert.alert(
       "Delete Contact ?",
@@ -100,7 +101,7 @@ export default class ViewContactScreen extends Component {
       [
         {
           text: "Cancel",
-          onPress: () => console.log("Contact delection canceled")
+          onPress: () => console.log("Contact delection canceled"),
         },
         {
           text: "OK",
@@ -108,14 +109,14 @@ export default class ViewContactScreen extends Component {
             try {
               await AsyncStorage.removeItem(key)
                 .then(() => this.props.navigation.goBack())
-                .catch(error => {
+                .catch((error) => {
                   console.log(error);
                 });
             } catch (error) {
               console.log(error);
             }
-          }
-        }
+          },
+        },
       ]
     );
   };
@@ -123,79 +124,89 @@ export default class ViewContactScreen extends Component {
   render() {
     return (
       <ScrollView style={styles.container}>
-        <View style={styles.contactIconContainer}>
-          <Text style={styles.contactIcon}>
-            {this.state.fname[0].toUpperCase()}
+        <View style={{ position: "relative" }}>
+          <Image
+            source={{ uri: this.state.uri }}
+            style={{ width: "100%", height: 200, opacity: 1 }}
+          />
+          <FontAwesome
+            name={"expand"}
+            size={30}
+            color={"white"}
+            style={{
+              position: "absolute",
+              top: "45%",
+              left: "45%",
+              padding: 7,
+              backgroundColor: "#eee",
+              opacity: 0.5,
+              borderRadius: 5,
+            }}
+          ></FontAwesome>
+        </View>
+        <View>
+          <Text style={styles.fname}>{this.state.fname}</Text>
+        </View>
+        <View style={styles.details}>
+          <Text style={[styles.infoText, { fontWeight: "bold" }]}>Phone </Text>
+          <Text style={{ marginLeft: 15, marginBottom: 10 }}>
+            {this.state.phone}{" "}
           </Text>
-          <View style={styles.nameContainer}>
-            <Text style={styles.name}>
-              {this.state.fname} {this.state.lname}
-            </Text>
-          </View>
         </View>
-        <View style={styles.infoContainer}>
-          <Card>
-            <CardItem bordered>
-              <Text style={styles.infoText}>Phone </Text>
-            </CardItem>
-            <CardItem bordered>
-              <Text style={styles.infoText}>{this.state.phone} </Text>
-            </CardItem>
-          </Card>
-          <Card>
-            <CardItem bordered>
-              <Text style={styles.infoText}>Email </Text>
-            </CardItem>
-            <CardItem bordered>
-              <Text style={styles.infoText}>{this.state.email} </Text>
-            </CardItem>
-          </Card>
-          <Card>
-            <CardItem bordered>
-              <Text style={styles.infoText}>Address </Text>
-            </CardItem>
-            <CardItem bordered>
-              <Text style={styles.infoText}>{this.state.address} </Text>
-            </CardItem>
-          </Card>
+        <View style={styles.details}>
+          <Text style={[styles.infoText, { fontWeight: "bold" }]}>Email</Text>
+          <Text style={{ marginLeft: 15, marginBottom: 10 }}>
+            {this.state.email}
+          </Text>
         </View>
-        <Card style={styles.actionContainer}>
-          <CardItem bordered style={styles.actionButton}>
-            <TouchableOpacity
-              onPress={() => {
-                this.smsAction(this.state.phone);
-              }}
-            >
-              <Entypo name={"message"} color="#B83227" size={50}></Entypo>
-            </TouchableOpacity>
-          </CardItem>
-          <CardItem bordered style={styles.actionButton}>
-            <TouchableOpacity
-              onPress={() => {
-                this.callAction(this.state.phone);
-              }}
-            >
-              <Entypo name={"phone"} color="#B83227" size={50}></Entypo>
-            </TouchableOpacity>
-          </CardItem>
-        </Card>
-        <Card style={styles.actionContainer}>
-          <CardItem bordered style={styles.actionButton}>
-            <TouchableOpacity onPress={() => this.editContact(this.state.Key)}>
-              <Entypo name={"edit"} color="#B83227" size={50}></Entypo>
-              <Text style={styles.actionText}>Edit</Text>
-            </TouchableOpacity>
-          </CardItem>
-          <CardItem bordered style={styles.actionButton}>
-            <TouchableOpacity
-              onPress={() => {
-                this.deleteContact(this.state.Key);
-              }}
-            >
-              <Entypo name={"trash"} color="#B83227" size={50}></Entypo>
-            </TouchableOpacity>
-          </CardItem>
-        </Card>
+        <View style={styles.details}>
+          <Text style={[styles.infoText, { fontWeight: "bold" }]}>Address</Text>
+          <Text style={{ marginLeft: 15, marginBottom: 10 }}>
+            {this.state.address}{" "}
+          </Text>
+        </View>
+
+        <View style={styles.actions}>
+          <TouchableOpacity
+            onPress={() => {
+              this.smsAction(this.state.phone);
+            }}
+          >
+            <FontAwesome
+              name={"comment"}
+              style={[styles.actionIcons, { borderColor: "gray" }]}
+            ></FontAwesome>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={() => {
+              this.callAction(this.state.phone);
+            }}
+          >
+            <FontAwesome
+              name={"phone"}
+              style={styles.actionIcons}
+            ></FontAwesome>
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={() => this.editContact(this.state.Key)}>
+            <FontAwesome
+              name={"edit"}
+              style={[styles.actionIcons, { borderColor: "lightblue" }]}
+            ></FontAwesome>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={() => {
+              this.deleteContact(this.state.Key);
+            }}
+          >
+            <FontAwesome
+              name={"trash"}
+              style={[styles.actionIcons, { borderColor: "darkred" }]}
+            ></FontAwesome>
+          </TouchableOpacity>
+        </View>
       </ScrollView>
     );
   }
@@ -204,21 +215,56 @@ export default class ViewContactScreen extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff"
+    backgroundColor: "#fff",
   },
+  fname: {
+    padding: 20,
+    backgroundColor: "#333945",
+    width: "90%",
+    alignSelf: "center",
+    textAlign: "center",
+    borderRadius: 3,
+    position: "relative",
+    bottom: 10,
+    elevation: 2,
+    opacity: 0.7,
+    fontWeight: "bold",
+    color: "white",
+  },
+  details: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    margin: 5,
+    borderRadius: 3,
+  },
+  actions: {
+    flex: 1,
+    width: "100%",
+    flexDirection: "row",
+    marginVertical: 10,
+    justifyContent: "space-around",
+  },
+  actionIcons: {
+    fontSize: 20,
+    padding: 20,
+    borderRadius: 3,
+    borderColor: "gold",
+    borderWidth: 1,
+  },
+
   infoContainer: {
-    flexDirection: "column"
+    flexDirection: "column",
   },
   contactIconContainer: {
     height: 200,
     backgroundColor: "#B83227",
     alignItems: "center",
-    justifyContent: "center"
+    justifyContent: "center",
   },
   contactIcon: {
     fontSize: 100,
     fontWeight: "bold",
-    color: "#fff"
+    color: "#fff",
   },
   nameContainer: {
     width: "100%",
@@ -227,27 +273,35 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(255,255,255,0.5)",
     justifyContent: "center",
     position: "absolute",
-    bottom: 0
+    bottom: 0,
   },
   name: {
     fontSize: 24,
     color: "#000",
-    fontWeight: "900"
+    fontWeight: "900",
   },
   infoText: {
+    marginVertical: 5,
     fontSize: 18,
-    fontWeight: "300"
+    fontWeight: "300",
+    position: "relative",
+    left: 15,
+    bottom: 15,
+    backgroundColor: "white",
+    // paddingLeft: 7,
+    width: 80,
+    textAlign: "center",
   },
   actionContainer: {
-    flexDirection: "row"
+    flexDirection: "row",
   },
   actionButton: {
     flex: 1,
     justifyContent: "center",
-    alignItems: "center"
+    alignItems: "center",
   },
   actionText: {
     color: "#B83227",
-    fontWeight: "900"
-  }
+    fontWeight: "900",
+  },
 });

@@ -10,20 +10,20 @@ const AppNavigator = createStackNavigator(
     Home: HomeScreen,
     Add: AddContactScreen,
     Edit: EditContactScreen,
-    View: ViewContactScreen
+    View: ViewContactScreen,
   },
   {
     initialRouteName: "Home",
     /* The header config from HomeScreen is now here */
     defaultNavigationOptions: {
       headerStyle: {
-        backgroundColor: "#487EB0"
+        backgroundColor: "darkred",
       },
       headerTintColor: "#fff",
       headerTitleStyle: {
-        fontWeight: "bold"
-      }
-    }
+        fontWeight: "bold",
+      },
+    },
   }
 );
 

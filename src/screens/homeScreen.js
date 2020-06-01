@@ -5,34 +5,62 @@ import {
   View,
   TouchableOpacity,
   AsyncStorage,
-  FlatList
+  FlatList,
 } from "react-native";
-import { Card } from "native-base";
+// import { Card } from "native-base";
 import { sorting } from "./functions/sortThem";
-import { Entypo } from "@expo/vector-icons";
+import { Entypo, FontAwesome } from "@expo/vector-icons";
+import {
+  Container,
+  Header,
+  Content,
+  List,
+  ListItem,
+  Left,
+  Body,
+  Right,
+  Thumbnail,
+} from "native-base";
+// import { ListItem } from "react-native-elements";
 
 function Item({ contact, Key, classProps }) {
   return (
     <TouchableOpacity
       onPress={() =>
         classProps.navigation.navigate("View", {
-          Key
+          Key,
         })
       }
     >
-      <Card style={styles.listItem}>
-        <View style={styles.iconContainer}>
-          <Text style={styles.contactIcon}>
-            {contact.fname[0].toUpperCase()}
-          </Text>
+      <View style={styles.contactItem}>
+        <View>
+          <Thumbnail source={{ uri: contact.uri }} />
         </View>
-        <View style={styles.infoContainer}>
-          <Text style={styles.infoText}>
-            {contact.fname} {contact.lname}
-          </Text>
-          <Text style={styles.infoText}>{contact.phone}</Text>
+
+        <View style={styles.contactDetailsText}>
+          <View>
+            <Text>{contact.fname}</Text>
+            <Text note>
+              {contact.phone} &middot; {contact.email}
+            </Text>
+          </View>
+          <View
+            style={{
+              // backgroundColor: "gray",
+              flex: 1,
+              alignItems: "flex-end",
+              padding: 10,
+            }}
+          >
+            {/* <Text note>3:43 pm</Text> */}
+            <FontAwesome
+              name="chevron-right"
+              size={10}
+              color="gray"
+            ></FontAwesome>
+          </View>
         </View>
-      </Card>
+      </View>
     </TouchableOpacity>
   );
 }
@@ -42,11 +70,11 @@ export default class HomeScreen extends Component {
     super();
     this.state = {
       Data: [],
-      result: []
+      result: [],
     };
   }
   static navigationOptions = {
-    title: "Home"
+    title: "Home",
     /* No more header config here! */
   };
 
@@ -59,8 +87,8 @@ export default class HomeScreen extends Component {
 
   getAllContacts = async () => {
     try {
-      await AsyncStorage.getAllKeys().then(keys => {
-        return AsyncStorage.multiGet(keys).then(result => {
+      await AsyncStorage.getAllKeys().then((keys) => {
+        return AsyncStorage.multiGet(keys).then((result) => {
           let Array1 = new Array(result.length).fill(0);
           // Get All The result[i][1] in Array1
           // console.log("result: ", result);
@@ -108,11 +136,24 @@ export default class HomeScreen extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff"
+    backgroundColor: "#fff",
   },
+  contactItem: {
+    flexDirection: "row",
+    marginHorizontal: 5,
+    marginVertical: 3,
+  },
+  contactDetailsText: {
+    flexDirection: "row",
+    borderBottomColor: "lightgray",
+    borderBottomWidth: 1,
+    flex: 1,
+    marginLeft: 10,
+  },
+
   listItem: {
     flexDirection: "row",
-    padding: 20
+    padding: 20,
   },
   iconContainer: {
     width: 50,
@@ -120,20 +161,20 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "#B83227",
-    borderRadius: 100
+    borderRadius: 100,
   },
   contactIcon: {
     fontSize: 28,
-    color: "#fff"
+    color: "#fff",
   },
   infoContainer: {
-    flexDirection: "column"
+    flexDirection: "column",
   },
   infoText: {
     fontSize: 16,
     fontWeight: "400",
     paddingLeft: 10,
-    paddingTop: 2
+    paddingTop: 2,
   },
   floatButton: {
     borderWidth: 1,
@@ -150,20 +191,20 @@ const styles = StyleSheet.create({
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
-      height: 10
+      height: 10,
     },
     shadowOpacity: 0.49,
     shadowRadius: 14.65,
 
-    elevation: 20
+    elevation: 20,
   },
   item: {
     backgroundColor: "#f9c2ff",
     padding: 20,
     marginVertical: 8,
-    marginHorizontal: 16
+    marginHorizontal: 16,
   },
   title: {
-    fontSize: 32
-  }
+    fontSize: 32,
+  },
 });
