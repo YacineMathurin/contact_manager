@@ -13,6 +13,7 @@ import {
 import { Card, CardItem } from "native-base";
 import { FontAwesome } from "@expo/vector-icons";
 import { Image } from "react-native-elements";
+import Lightbox from "react-native-lightbox";
 
 export default class ViewContactScreen extends Component {
   constructor(props) {
@@ -125,24 +126,31 @@ export default class ViewContactScreen extends Component {
     return (
       <ScrollView style={styles.container}>
         <View style={{ position: "relative" }}>
-          <Image
+          <Lightbox navigator={this.props.navigator}>
+            <Image
+              style={{ height: 300 }}
+              source={{
+                uri: this.state.uri,
+              }}
+            />
+          </Lightbox>
+          {/* <Image
             source={{ uri: this.state.uri }}
             style={{ width: "100%", height: 200, opacity: 1 }}
-          />
-          <FontAwesome
+          /> */}
+          {/* <FontAwesome
             name={"expand"}
             size={30}
             color={"white"}
             style={{
               position: "absolute",
-              top: "45%",
-              left: "45%",
+              top: 5,
+              right: 5,
               padding: 7,
-              backgroundColor: "#eee",
-              opacity: 0.5,
+              // backgroundColor: "#eee",
               borderRadius: 5,
             }}
-          ></FontAwesome>
+          ></FontAwesome> */}
         </View>
         <View>
           <Text style={styles.fname}>{this.state.fname}</Text>

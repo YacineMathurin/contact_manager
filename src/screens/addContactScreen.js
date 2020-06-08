@@ -123,7 +123,7 @@ export default class AddContactScreen extends Component {
                 style={{ backgroundColor: "gold", padding: 5, borderRadius: 3 }}
               ></FontAwesome>
               <Input
-                autoComplete="none"
+                autoCompleteType="off"
                 placeholder="Full Name"
                 autoCorrect={false}
                 // autoCapitalize="none"
@@ -141,10 +141,10 @@ export default class AddContactScreen extends Component {
 
               <Input
                 placeholder="Phone"
-                autoComplete="none"
+                autoCompleteType="off"
                 autoCorrect={false}
                 // autoCapitalize="none"
-                keyboardType="numeric"
+                keyboardType="phone-pad"
                 onChangeText={(phone) => this.setState({ phone })}
               />
             </Item>

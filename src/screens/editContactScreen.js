@@ -11,6 +11,8 @@ import {
 } from "react-native";
 import { Form, Item, Label, Input, Button, Textarea } from "native-base";
 import { Image } from "react-native-elements";
+import { FontAwesome } from "@expo/vector-icons";
+import * as ImagePicker from "expo-image-picker";
 
 export default class EditContactScreen extends Component {
   constructor(props) {
@@ -22,6 +24,7 @@ export default class EditContactScreen extends Component {
       email: "DummyText",
       address: "DummyText",
       key: "DummyText",
+      uri: "",
     };
   }
   static navigationOptions = {
@@ -61,6 +64,7 @@ export default class EditContactScreen extends Component {
         email: this.state.email,
         phone: this.state.phone,
         address: this.state.address,
+        uri: this.state.uri,
       };
       await AsyncStorage.mergeItem(key, JSON.stringify(contact))
         .then(() => this.props.navigation.goBack())
@@ -69,16 +73,49 @@ export default class EditContactScreen extends Component {
         });
     } else Alert.alert("All field are required !");
   };
+  _pickImage = async () => {
+    try {
+      let result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.All,
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 1,
+      });
+      if (!result.cancelled) {
+        this.setState({ uri: result.uri });
+      }
+
+      console.log(result);
+    } catch (E) {
+      console.log(E);
+    }
+  };
   render() {
     return (
       <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
         <ScrollView>
           <View style={styles.container}>
             <View style={{ marginBottom: 10 }}>
-              <Image
-                source={{ uri: this.state.uri }}
-                style={{ width: "100%", height: 200 }}
-              />
+              {this.state.uri !== "" && (
+                <Image
+                  source={{ uri: this.state.uri }}
+                  style={{ width: "100%", height: 200 }}
+                />
+              )}
+              <FontAwesome
+                name={"photo"}
+                size={30}
+                color={"white"}
+                style={{
+                  position: "absolute",
+                  top: 5,
+                  right: 5,
+                  padding: 7,
+                  // backgroundColor: "#eee",
+                  borderRadius: 5,
+                }}
+                onPress={this._pickImage}
+              ></FontAwesome>
             </View>
             <View style={styles.details}>
               <Text
@@ -110,7 +147,7 @@ export default class EditContactScreen extends Component {
               <Textarea
                 autoCorrect={false}
                 autoCapitalize="none"
-                keyboardType="default"
+                keyboardType="phone-pad"
                 value={this.state.phone}
                 onChangeText={(phone) => this.setState({ phone })}
                 style={[
@@ -126,7 +163,7 @@ export default class EditContactScreen extends Component {
               <Textarea
                 autoCorrect={false}
                 autoCapitalize="none"
-                keyboardType="default"
+                keyboardType="email-address"
                 value={this.state.email}
                 onChangeText={(email) => this.setState({ email })}
                 style={[
